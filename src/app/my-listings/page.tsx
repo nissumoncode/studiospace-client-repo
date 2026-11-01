@@ -3,7 +3,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Image from "next/image";
-
+import ProtectedRoute from "@/components/ProtectedRoute/ProtectedRoute";
 import { Button } from "@/components/ui/button";
 import { Trash2 } from "lucide-react";
 
@@ -12,11 +12,12 @@ type Studio = {
   title: string;
   category: string;
   hourlyRate: number;
+  capacity: number;
   location: string;
   image: string;
 };
 
-export default function MyListingsPage() {
+function MyListingsContent() {
   const [studios, setStudios] = useState<Studio[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -73,6 +74,10 @@ export default function MyListingsPage() {
                 <p className="text-sm text-muted-foreground">
                   {studio.category} · {studio.location}
                 </p>
+                <p className="mt-2">
+                  Maximum Capacity: {studio.capacity} guests
+                </p>
+
                 <p className="mt-2 font-semibold">
                   ${studio.hourlyRate} / hour
                 </p>
@@ -95,5 +100,12 @@ export default function MyListingsPage() {
         </div>
       )}
     </main>
+  );
+}
+export default function MyListingsPage() {
+  return (
+    <ProtectedRoute>
+      <MyListingsContent />
+    </ProtectedRoute>
   );
 }

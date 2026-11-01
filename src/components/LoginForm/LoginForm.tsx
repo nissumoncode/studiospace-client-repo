@@ -23,6 +23,22 @@ export default function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
 
+  function getCallbackURL() {
+    const requestedURL = new URLSearchParams(window.location.search).get(
+      "callbackURL",
+    );
+
+    if (
+      requestedURL &&
+      requestedURL.startsWith("/") &&
+      !requestedURL.startsWith("//")
+    ) {
+      return requestedURL;
+    }
+
+    return "/";
+  }
+
   async function handleLogin(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
@@ -33,7 +49,7 @@ export default function LoginForm() {
     const { error } = await authClient.signIn.email({
       email,
       password,
-      callbackURL: "/",
+      callbackURL: getCallbackURL(),
     });
 
     if (error) {
@@ -42,14 +58,13 @@ export default function LoginForm() {
     }
 
     toast.success("Login successful!");
-    router.push("/");
+    router.push(getCallbackURL());
     router.refresh();
   }
-
   async function handleGoogleLogin() {
     const { error } = await authClient.signIn.social({
       provider: "google",
-      callbackURL: `${window.location.origin}/`,
+      callbackURL: `${window.location.origin}${getCallbackURL()}`,
     });
 
     if (error) {
@@ -58,7 +73,8 @@ export default function LoginForm() {
     }
 
     toast.success("Google login successful!");
-    router.push("/");
+    router.push(getCallbackURL());
+    router.refresh();
   }
 
   return (

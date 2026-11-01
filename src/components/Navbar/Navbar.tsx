@@ -3,7 +3,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { Aperture, Menu, X } from "lucide-react";
+import { Aperture, Menu, X, ChevronDown, Sun, Moon } from "lucide-react";
 
 import { authClient } from "@/lib/auth-client";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -35,7 +35,25 @@ export default function Navbar() {
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
   const [hash, setHash] = useState("");
+  const [theme, setTheme] = useState<"light" | "dark">("light");
+  const [mounted, setMounted] = useState(false);
 
+  useEffect(() => {
+    const savedTheme = localStorage.getItem("theme");
+    const initialTheme = savedTheme === "dark" ? "dark" : "light";
+
+    setTheme(initialTheme);
+    document.documentElement.classList.toggle("dark", initialTheme === "dark");
+    setMounted(true);
+  }, []);
+
+  function handleThemeToggle() {
+    const nextTheme = theme === "dark" ? "light" : "dark";
+
+    setTheme(nextTheme);
+    document.documentElement.classList.toggle("dark", nextTheme === "dark");
+    localStorage.setItem("theme", nextTheme);
+  }
   useEffect(() => {
     const updateHash = () => setHash(window.location.hash);
 
@@ -90,7 +108,7 @@ export default function Navbar() {
         <div className="hidden items-center gap-3 lg:flex">
           {isPending ? null : session?.user ? (
             <DropdownMenu>
-              <DropdownMenuTrigger className="rounded-full outline-none">
+              <div className="flex items-center gap-2">
                 <Avatar>
                   <AvatarImage
                     src={session.user.image || ""}
@@ -100,7 +118,11 @@ export default function Navbar() {
                     {session.user.name?.charAt(0).toUpperCase() || "U"}
                   </AvatarFallback>
                 </Avatar>
-              </DropdownMenuTrigger>
+
+                <DropdownMenuTrigger className="rounded-md p-1 outline-none hover:bg-accent">
+                  <ChevronDown size={18} />
+                </DropdownMenuTrigger>
+              </div>
 
               <DropdownMenuContent align="end" className="w-52">
                 <div className="px-2 py-2">
@@ -149,6 +171,15 @@ export default function Navbar() {
             </>
           )}
         </div>
+
+        <button
+          type="button"
+          onClick={handleThemeToggle}
+          aria-label="Toggle theme"
+          className="rounded-lg border p-2 hover:bg-accent"
+        >
+          {mounted && theme === "dark" ? <Sun size={20} /> : <Moon size={20} />}
+        </button>
 
         <button
           type="button"

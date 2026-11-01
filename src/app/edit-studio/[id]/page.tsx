@@ -3,8 +3,8 @@
 import { useEffect, useState, type FormEvent } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { toast } from "sonner";
+import ProtectedRoute from "@/components/ProtectedRoute/ProtectedRoute";
 
-import { authClient } from "@/lib/auth-client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -14,6 +14,9 @@ type Studio = {
   title: string;
   category: string;
   hourlyRate: number;
+  dailyRate: number;
+  monthlyRate: number;
+  yearlyRate: number;
   securityDeposit: number;
   maxCapacity: number;
   location: string;
@@ -27,7 +30,7 @@ type Studio = {
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
-export default function EditStudioPage() {
+function EditStudioContent() {
   const params = useParams();
   const router = useRouter();
   const id = params.id as string;
@@ -41,6 +44,9 @@ export default function EditStudioPage() {
     title: "",
     category: "",
     hourlyRate: 0,
+    dailyRate: 0,
+    monthlyRate: 0,
+    yearlyRate: 0,
     securityDeposit: 0,
     maxCapacity: 1,
     location: "",
@@ -71,6 +77,9 @@ export default function EditStudioPage() {
           title: studio.title || "",
           category: studio.category || "",
           hourlyRate: studio.hourlyRate || 0,
+          dailyRate: studio.dailyRate || 0,
+          monthlyRate: studio.monthlyRate || 0,
+          yearlyRate: studio.yearlyRate || 0,
           securityDeposit: studio.securityDeposit || 0,
           maxCapacity: studio.maxCapacity || 1,
           location: studio.location || "",
@@ -102,6 +111,9 @@ export default function EditStudioPage() {
       ...prev,
       [name]:
         name === "hourlyRate" ||
+        name === "dailyRate" ||
+        name === "monthlyRate" ||
+        name === "yearlyRate" ||
         name === "securityDeposit" ||
         name === "maxCapacity"
           ? Number(value)
@@ -185,6 +197,47 @@ export default function EditStudioPage() {
                   type="number"
                   name="hourlyRate"
                   value={formData.hourlyRate}
+                  onChange={handleChange}
+                  min="1"
+                  required
+                />
+              </div>
+              <div>
+                <label className="mb-2 block text-sm font-medium">
+                  Daily Rate
+                </label>
+                <Input
+                  type="number"
+                  name="dailyRate"
+                  value={formData.dailyRate}
+                  onChange={handleChange}
+                  min="1"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="mb-2 block text-sm font-medium">
+                  Monthly Rate
+                </label>
+                <Input
+                  type="number"
+                  name="monthlyRate"
+                  value={formData.monthlyRate}
+                  onChange={handleChange}
+                  min="1"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="mb-2 block text-sm font-medium">
+                  Yearly Rate
+                </label>
+                <Input
+                  type="number"
+                  name="yearlyRate"
+                  value={formData.yearlyRate}
                   onChange={handleChange}
                   min="1"
                   required
@@ -304,5 +357,12 @@ export default function EditStudioPage() {
         </CardContent>
       </Card>
     </main>
+  );
+}
+export default function EditStudioPage() {
+  return (
+    <ProtectedRoute>
+      <EditStudioContent />
+    </ProtectedRoute>
   );
 }

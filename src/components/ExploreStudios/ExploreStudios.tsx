@@ -41,6 +41,7 @@ export default function ExploreStudios() {
   const [studios, setStudios] = useState<Studio[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [retryCount, setRetryCount] = useState(0);
 
   useEffect(() => {
     const fetchStudios = async () => {
@@ -71,7 +72,7 @@ export default function ExploreStudios() {
     };
 
     fetchStudios();
-  }, [selectedCategory]);
+  }, [selectedCategory, retryCount]);
 
   return (
     <main className="min-h-screen">
@@ -126,7 +127,7 @@ export default function ExploreStudios() {
         {!loading && error && (
           <div className="py-16 text-center">
             <p className="mb-4 text-destructive">{error}</p>
-            <Button onClick={() => setSelectedCategory(selectedCategory)}>
+            <Button onClick={() => setRetryCount((prev) => prev + 1)}>
               Try Again
             </Button>
           </div>

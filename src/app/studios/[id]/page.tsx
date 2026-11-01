@@ -5,14 +5,24 @@ import { useParams } from "next/navigation";
 import Image from "next/image";
 import { MapPin, Star, ArrowLeft } from "lucide-react";
 import Link from "next/link";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Navigation, Pagination } from "swiper/modules";
+import BookingModal from "@/components/BookingModal/BookingModal";
+
+import "swiper/css";
+import "swiper/css/navigation";
+import "swiper/css/pagination";
 
 interface Studio {
   _id: string;
   title: string;
   category: string;
   hourlyRate: number;
+  dailyRate: number;
+  monthlyRate: number;
+  yearlyRate: number;
   securityDeposit: number;
-  maxCapacity: number;
+  capacity: number;
   location: string;
   address: string;
   image: string;
@@ -29,6 +39,7 @@ export default function StudioDetailsPage() {
   const [studio, setStudio] = useState<Studio | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [isBookingOpen, setIsBookingOpen] = useState(false);
 
   useEffect(() => {
     const fetchStudio = async () => {
@@ -66,9 +77,16 @@ export default function StudioDetailsPage() {
     );
   }
 
-  const gallery = studio.imageGallery?.length
-    ? studio.imageGallery
-    : [studio.image];
+  const gallery = (
+    studio.imageGallery?.length ? studio.imageGallery : [studio.image]
+  ).filter((url) => {
+    try {
+      const parsedUrl = new URL(url);
+      return parsedUrl.protocol === "https:";
+    } catch {
+      return false;
+    }
+  });
 
   return (
     <main className="mx-auto w-full max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
@@ -92,23 +110,32 @@ export default function StudioDetailsPage() {
         {studio.location} · {studio.address}
       </p>
 
-      <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <Swiper
+        modules={[Navigation, Pagination]}
+        navigation
+        pagination={{ clickable: true }}
+        spaceBetween={16}
+        slidesPerView={1}
+        breakpoints={{
+          640: { slidesPerView: 2 },
+          1024: { slidesPerView: 3 },
+        }}
+        className="mt-6"
+      >
         {gallery.map((image, index) => (
-          <div
-            key={`${image}-${index}`}
-            className="relative h-64 overflow-hidden rounded-2xl"
-          >
-            <Image
-              src={image}
-              alt={`${studio.title} photo ${index + 1}`}
-              fill
-              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-              className="object-cover"
-            />
-          </div>
+          <SwiperSlide key={`${image}-${index}`}>
+            <div className="relative h-64 overflow-hidden rounded-2xl">
+              <Image
+                src={image}
+                alt={`${studio.title} photo ${index + 1}`}
+                fill
+                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                className="object-cover"
+              />
+            </div>
+          </SwiperSlide>
         ))}
-      </div>
-
+      </Swiper>
       <div className="mt-8 grid gap-8 lg:grid-cols-[1fr_320px]">
         <section>
           <h2 className="text-xl font-bold text-foreground">
@@ -135,27 +162,27 @@ export default function StudioDetailsPage() {
         </section>
 
         <aside className="h-fit rounded-2xl border border-border bg-card p-6">
-          <p className="text-2xl font-bold text-foreground">
-            ৳{studio.hourlyRate}
-            <span className="text-sm font-normal text-muted-foreground">
-              {" "}
-              / hour
-            </span>
-          </p>
+          <div className="space-y-2">
+            <p>Hourly: ৳{studio.hourlyRate}</p>
+            <p>Daily: ৳{studio.dailyRate}</p>
+            <p>Monthly: ৳{studio.monthlyRate}</p>
+            <p>Yearly: ৳{studio.yearlyRate}</p>
+          </div>
 
           <p className="mt-3 flex items-center gap-2 text-sm text-muted-foreground">
             <Star size={16} className="fill-accent text-accent" />
-            {studio.rating} ({studio.totalReviews} reviews)
+            {studio.rating} ({studio.totalReviews ?? 0} reviews)
           </p>
 
           <p className="mt-4 text-sm text-muted-foreground">
             Security deposit: ৳{studio.securityDeposit}
           </p>
           <p className="mt-2 text-sm text-muted-foreground">
-            Maximum capacity: {studio.maxCapacity} people
+            Maximum capacity: {studio.capacity} people
           </p>
 
           <button
+            onClick={() => setIsBookingOpen(true)}
             type="button"
             className="mt-6 w-full rounded-lg bg-primary px-5 py-3 font-semibold text-primary-foreground"
           >
@@ -163,6 +190,11 @@ export default function StudioDetailsPage() {
           </button>
         </aside>
       </div>
+      <BookingModal
+        open={isBookingOpen}
+        onOpenChange={setIsBookingOpen}
+        studio={studio}
+      />
     </main>
   );
 }

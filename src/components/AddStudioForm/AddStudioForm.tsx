@@ -36,6 +36,28 @@ export default function AddStudioForm() {
   const { data: session } = authClient.useSession();
   const [selectedAmenities, setSelectedAmenities] = useState<string[]>([]);
 
+  const [mainImage, setMainImage] = useState("");
+  const [galleryImages, setGalleryImages] = useState<string[]>([]);
+  const [isUploading, setIsUploading] = useState(false);
+
+  async function uploadImage(file: File): Promise<string> {
+    const formData = new FormData();
+    formData.append("image", file);
+
+    const response = await fetch("/api/upload-image", {
+      method: "POST",
+      body: formData,
+    });
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      throw new Error(result.message || "Image upload failed");
+    }
+
+    return result.imageUrl;
+  }
+
   function handleAmenityChange(amenity: string, checked: boolean) {
     setSelectedAmenities((previous) =>
       checked
@@ -47,21 +69,46 @@ export default function AddStudioForm() {
     event.preventDefault();
 
     const formData = new FormData(event.currentTarget);
+    const mainFile = formData.get("image");
 
-    const studioData = {
-      title: formData.get("title"),
-      category: formData.get("category"),
-      hourlyRate: formData.get("hourlyRate"),
-      securityDeposit: formData.get("securityDeposit"),
-      capacity: formData.get("capacity"),
-      location: formData.get("location"),
-      address: formData.get("address"),
-      image: formData.get("image"),
-      amenities: selectedAmenities,
-      overview: formData.get("overview"),
-    };
+    if (!(mainFile instanceof File) || mainFile.size === 0) {
+      toast.error("Please select a studio image");
+      return;
+    }
+
+    setIsUploading(true);
 
     try {
+      // Upload main image to ImgBB
+      const imageUrl = await uploadImage(mainFile);
+      setMainImage(imageUrl);
+
+      // Keep additional gallery URLs
+      const galleryFiles = formData
+        .getAll("imageGallery")
+        .filter((file): file is File => file instanceof File && file.size > 0);
+
+      const galleryUrls = await Promise.all(
+        galleryFiles.map((file) => uploadImage(file)),
+      );
+
+      const studioData = {
+        title: formData.get("title"),
+        category: formData.get("category"),
+        hourlyRate: formData.get("hourlyRate"),
+        dailyRate: formData.get("dailyRate"),
+        monthlyRate: formData.get("monthlyRate"),
+        yearlyRate: formData.get("yearlyRate"),
+        securityDeposit: formData.get("securityDeposit"),
+        capacity: formData.get("capacity"),
+        location: formData.get("location"),
+        address: formData.get("address"),
+        image: imageUrl,
+        imageGallery: [imageUrl, ...galleryUrls],
+        amenities: selectedAmenities,
+        overview: formData.get("overview"),
+      };
+
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/api/studios`,
         {
@@ -83,8 +130,12 @@ export default function AddStudioForm() {
 
       toast.success("Studio added successfully!");
       router.push("/my-listings");
-    } catch {
-      toast.error("Something went wrong. Please try again.");
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "Something went wrong",
+      );
+    } finally {
+      setIsUploading(false);
     }
   }
   return (
@@ -194,6 +245,41 @@ export default function AddStudioForm() {
                   />
                 </div>
               </div>
+              <div className="space-y-2">
+                <label htmlFor="dailyRate">Daily Rate ($)</label>
+                <Input
+                  id="dailyRate"
+                  name="dailyRate"
+                  type="number"
+                  min="1"
+                  required
+                  placeholder="200"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <label htmlFor="monthlyRate">Monthly Rate ($)</label>
+                <Input
+                  id="monthlyRate"
+                  name="monthlyRate"
+                  type="number"
+                  min="1"
+                  required
+                  placeholder="2000"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <label htmlFor="yearlyRate">Yearly Rate ($)</label>
+                <Input
+                  id="yearlyRate"
+                  name="yearlyRate"
+                  type="number"
+                  min="1"
+                  required
+                  placeholder="20000"
+                />
+              </div>
 
               <div className="space-y-2">
                 <label htmlFor="address">Full Address</label>
@@ -206,13 +292,23 @@ export default function AddStudioForm() {
               </div>
 
               <div className="space-y-2">
-                <label htmlFor="image">Studio Image URL</label>
+                <label htmlFor="image">Studio Image</label>
                 <Input
                   id="image"
                   name="image"
-                  type="url"
-                  placeholder="https://example.com/image.jpg"
+                  type="file"
+                  accept="image/*"
                   required
+                />
+              </div>
+              <div className="space-y-2">
+                <label htmlFor="imageGallery">Additional Gallery Images</label>
+                <Input
+                  id="imageGallery"
+                  name="imageGallery"
+                  type="file"
+                  accept="image/*"
+                  multiple
                 />
               </div>
 
@@ -244,8 +340,8 @@ export default function AddStudioForm() {
                 />
               </div>
 
-              <Button type="submit" className="w-full">
-                Add Studio
+              <Button type="submit" className="w-full" disabled={isUploading}>
+                {isUploading ? "Uploading Image..." : "Add Studio"}
               </Button>
             </form>
           </CardContent>
