@@ -89,6 +89,19 @@ export default function DeleteStudioPage() {
     setDeleting(true);
 
     try {
+      const cookieResponse = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/auth/set-jwt-cookie`,
+        {
+          method: "POST",
+          credentials: "include",
+        },
+      );
+
+      if (!cookieResponse.ok) {
+        toast.error("Authentication failed. Please login again.");
+        return;
+      }
+
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/api/studios/${id}`,
         {
