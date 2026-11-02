@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
@@ -31,7 +31,7 @@ const categories = [
   "Art Workshops",
 ];
 
-export default function ExploreStudios() {
+function ExploreStudiosContent() {
   const searchParams = useSearchParams();
 
   const [selectedCategory, setSelectedCategory] = useState(
@@ -77,7 +77,6 @@ export default function ExploreStudios() {
   return (
     <main className="min-h-screen">
       <section className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
-        {/* Page Heading */}
         <div className="mb-10 text-center">
           <Badge variant="secondary" className="mb-4">
             Explore Creative Spaces
@@ -92,7 +91,6 @@ export default function ExploreStudios() {
           </p>
         </div>
 
-        {/* Category Filters */}
         <div className="mb-10 flex flex-wrap justify-center gap-3">
           {categories.map((category) => (
             <Button
@@ -105,7 +103,6 @@ export default function ExploreStudios() {
           ))}
         </div>
 
-        {/* Loading Skeleton */}
         {loading && (
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {Array.from({ length: 6 }).map((_, index) => (
@@ -123,7 +120,6 @@ export default function ExploreStudios() {
           </div>
         )}
 
-        {/* Error State */}
         {!loading && error && (
           <div className="py-16 text-center">
             <p className="mb-4 text-destructive">{error}</p>
@@ -133,7 +129,6 @@ export default function ExploreStudios() {
           </div>
         )}
 
-        {/* Empty State */}
         {!loading && !error && studios.length === 0 && (
           <div className="py-16 text-center">
             <h2 className="text-xl font-semibold">No studios found</h2>
@@ -146,7 +141,6 @@ export default function ExploreStudios() {
           </div>
         )}
 
-        {/* Studio Cards */}
         {!loading && !error && studios.length > 0 && (
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {studios.map((studio) => (
@@ -209,5 +203,15 @@ export default function ExploreStudios() {
         )}
       </section>
     </main>
+  );
+}
+
+export default function ExploreStudios() {
+  return (
+    <Suspense
+      fallback={<div className="py-20 text-center">Loading studios...</div>}
+    >
+      <ExploreStudiosContent />
+    </Suspense>
   );
 }
