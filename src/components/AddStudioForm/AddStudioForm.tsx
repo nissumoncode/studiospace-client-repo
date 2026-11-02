@@ -6,7 +6,6 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { authClient } from "@/lib/auth-client";
-
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
@@ -36,8 +35,6 @@ export default function AddStudioForm() {
   const { data: session } = authClient.useSession();
   const [selectedAmenities, setSelectedAmenities] = useState<string[]>([]);
 
-  const [mainImage, setMainImage] = useState("");
-  const [galleryImages, setGalleryImages] = useState<string[]>([]);
   const [isUploading, setIsUploading] = useState(false);
 
   async function uploadImage(file: File): Promise<string> {
@@ -108,6 +105,19 @@ export default function AddStudioForm() {
         amenities: selectedAmenities,
         overview: formData.get("overview"),
       };
+
+      const cookieResponse = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/auth/set-jwt-cookie`,
+        {
+          method: "POST",
+          credentials: "include",
+        },
+      );
+
+      if (!cookieResponse.ok) {
+        toast.error("Authentication failed. Please login again.");
+        return;
+      }
 
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/api/studios`,
