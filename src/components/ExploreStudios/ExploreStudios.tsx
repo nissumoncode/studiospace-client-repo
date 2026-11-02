@@ -56,6 +56,9 @@ function ExploreStudiosContent() {
 
         const response = await fetch(
           `${process.env.NEXT_PUBLIC_API_URL}/api/studios${query}`,
+          {
+            credentials: "include",
+          },
         );
 
         if (!response.ok) {
