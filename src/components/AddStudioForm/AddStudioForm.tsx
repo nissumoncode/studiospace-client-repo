@@ -78,7 +78,6 @@ export default function AddStudioForm() {
     try {
       // Upload main image to ImgBB
       const imageUrl = await uploadImage(mainFile);
-      setMainImage(imageUrl);
 
       // Keep additional gallery URLs
       const galleryFiles = formData
