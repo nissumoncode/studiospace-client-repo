@@ -1,36 +1,124 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+**## StudioSpace – Creative Studio Marketplace**
 
-## Getting Started
+**## Live Website:**
 
-First, run the development server:
+[https://studiospace-marketplace.vercel.app](https://studiospace-marketplace.vercel.app)
+
+**## studiospace-client-repo:**
+
+[https://github.com/nissumoncode/studiospace-client-repo](https://github.com/nissumoncode/studiospace-client-repo)
+
+**## studiospace-server-repo:**
+
+[https://github.com/nissumoncode/studiospace-server-repo](https://github.com/nissumoncode/studiospace-server-repo)
+
+**### About the Project:**
+
+StudioSpace is a creative studio marketplace where users can explore creative spaces, view studio details, and book studios for their projects. Studio owners can list and manage their studios, while users can manage their bookings through their accounts.
+
+**### Features:**
+
+- User registration and login with email and password.
+- Google authentication.
+- Explore creative studios and filter them by category.
+- View detailed information about individual studios.
+- Add new studio listings.
+- Edit and delete studio listings.
+- Manage personal studio listings.
+- Book studios and view booking history.
+- Manage booking statuses and cancel pending bookings.
+- Prevent overlapping studio bookings.
+- Different pricing options for studio bookings.
+- Protected routes and authenticated API operations.
+- Responsive user interface for different screen sizes.
+- Loading states, error handling, and empty states.
+
+**### Technologies Used:**
+
+**Frontend**
+
+- Next.js
+- React
+- TypeScript
+- Tailwind CSS
+- shadcn/ui
+- Better Auth
+
+**Backend**
+
+- Node.js
+- Express.js
+- MongoDB
+- Better Auth
+- JWT Authentication
+
+**Deployment**
+
+- Vercel (Frontend)
+- Render (Backend)
+- MongoDB Atlas (Database)
+
+**##Clien**
+
+**## Clone the client repository:**
+
+```bash
+git clone https://github.com/nissumoncode/studiospace-client-repo.git
+```
+
+**## Navigate to the project:**
+
+```bash
+
+cd studiospace-client-repo
+```
+
+**## Install dependencies:**
+
+```bash
+npm install
+```
+
+**## Start the development server:**
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+**## Server##**
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+**## Clone the server repository:**
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+git clone https://github.com/nissumoncode/studiospace-server-repo.git
+```
 
-## Learn More
+**## Navigate to the project:**
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+cd studiospace-server-repo
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+**## Install dependencies:**
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```bash
+npm install
+```
 
-## Deploy on Vercel
+**## Start the server:**
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```bash
+node index.js
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+**## Examiner Test Credentials:**
+
+**Email:** [Add your test account email]
+
+**Password:** [Add your test account password]
+
+Use these credentials to test the authenticated features of StudioSpace.
+
+**## Author**
+
+Developed as a creative studio marketplace project using Next.js, Express.js, MongoDB, and TypeScript.
