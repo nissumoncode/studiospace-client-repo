@@ -62,11 +62,19 @@ export default function LoginForm() {
     router.refresh();
   }
   async function handleGoogleLogin() {
-    await authClient.signIn.social({
+    const { error } = await authClient.signIn.social({
       provider: "google",
       callbackURL: `${window.location.origin}${getCallbackURL()}`,
-      errorCallbackURL: `${window.location.origin}/login`,
     });
+
+    if (error) {
+      toast.error(error.message || "Google login failed");
+      return;
+    }
+
+    toast.success("Google login successful!");
+    router.push(getCallbackURL());
+    router.refresh();
   }
 
   return (

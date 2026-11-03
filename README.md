@@ -58,7 +58,7 @@ StudioSpace is a creative studio marketplace where users can explore creative sp
 - Render (Backend)
 - MongoDB Atlas (Database)
 
-**## Clien**
+**## Client**
 
 **## Clone the client repository:**
 
@@ -84,7 +84,7 @@ npm install
 npm run dev
 ```
 
-**## Server##**
+**## Server **
 
 **## Clone the server repository:**
 
@@ -112,9 +112,9 @@ node index.js
 
 **## Examiner Test Credentials:**
 
-**Email:** [Add your test account email]
+**Email:** [tastingacount60@gmail.com]
 
-**Password:** [Add your test account password]
+**Password:** [TastingAcount60]
 
 Use these credentials to test the authenticated features of StudioSpace.
 
