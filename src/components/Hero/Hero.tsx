@@ -39,7 +39,7 @@ const slides = [
 ];
 
 export default function Hero() {
-  const { data: session } = authClient.useSession();
+  const { data: session, isPending } = authClient.useSession();
   return (
     <section className="mx-auto w-full max-w-7xl px-4 pt-5 sm:px-6 sm:pt-7 lg:px-8 lg:pt-8">
       <Swiper
@@ -51,7 +51,7 @@ export default function Hero() {
           disableOnInteraction: false,
         }}
         pagination={{ clickable: true }}
-        className="studio-hero h-[400px] overflow-hidden rounded-2xl sm:h-[440px] lg:h-[480px] sm:rounded-3xl"
+        className="studio-hero h-100 overflow-hidden rounded-2xl sm:h-110 lg:h-120 sm:rounded-3xl"
       >
         {slides.map((slide) => (
           <SwiperSlide key={slide.id} className="h-full">
@@ -83,12 +83,18 @@ export default function Hero() {
                       Explore Studios →
                     </Link>
 
-                    <Link
-                      href={session ? "/add-studio" : "/login"}
-                      className="rounded-lg border border-white/60 px-5 py-3 text-sm font-semibold text-white transition hover:bg-white/15 sm:px-7 sm:py-3.5 sm:text-base"
-                    >
-                      Host Your Space
-                    </Link>
+                    {isPending ? (
+                      <span className="rounded-lg border border-white/60 px-5 py-3 text-sm font-semibold text-white opacity-60 sm:px-7 sm:py-3.5 sm:text-base">
+                        Loading...
+                      </span>
+                    ) : (
+                      <Link
+                        href={session ? "/add-studio" : "/login"}
+                        className="rounded-lg border border-white/60 px-5 py-3 text-sm font-semibold text-white transition hover:bg-white/15 sm:px-7 sm:py-3.5 sm:text-base"
+                      >
+                        Host Your Space
+                      </Link>
+                    )}
                   </div>
                 </div>
               </div>

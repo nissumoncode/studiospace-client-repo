@@ -68,7 +68,7 @@ export default function StudioCategories() {
               <Link
                 key={category.slug}
                 href={`/studios?category=${encodeURIComponent(category.slug)}`}
-                className="group relative flex min-h-[220px] flex-col justify-between overflow-hidden rounded-2xl border border-border bg-card p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-accent hover:shadow-lg"
+                className="group relative flex min-h-55 flex-col justify-between overflow-hidden rounded-2xl border border-border bg-card p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-accent hover:shadow-lg"
               >
                 <div>
                   <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-xl bg-background text-primary transition-colors duration-300 group-hover:bg-accent group-hover:text-accent-foreground">
