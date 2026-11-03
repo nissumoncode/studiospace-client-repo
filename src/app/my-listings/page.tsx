@@ -1,11 +1,14 @@
 "use client";
+
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Image from "next/image";
 import ProtectedRoute from "@/components/ProtectedRoute/ProtectedRoute";
 import { Button } from "@/components/ui/button";
-import { Trash2 } from "lucide-react";
+import { Trash2, Pencil } from "lucide-react";
+import { toast } from "sonner";
+import EditStudioform from "@/components/EditStudioform/EditStudioform";
 
 type Studio = {
   _id: string;
@@ -15,11 +18,15 @@ type Studio = {
   capacity: number;
   location: string;
   image: string;
+  status: "active" | "inactive";
 };
 
 function MyListingsContent() {
   const [studios, setStudios] = useState<Studio[]>([]);
   const [loading, setLoading] = useState(true);
+  const [updatingId, setUpdatingId] = useState<string | null>(null);
+  const [selectedStudioId, setSelectedStudioId] = useState<string | null>(null);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     async function fetchStudios() {
@@ -31,9 +38,15 @@ function MyListingsContent() {
 
         const result = await response.json();
 
-        if (response.ok) {
-          setStudios(result.data);
+        if (!response.ok) {
+          throw new Error(result.message || "Failed to fetch studios");
         }
+
+        setStudios(result.data);
+      } catch (error) {
+        setError(
+          error instanceof Error ? error.message : "Failed to load studios",
+        );
       } finally {
         setLoading(false);
       }
@@ -42,9 +55,75 @@ function MyListingsContent() {
     fetchStudios();
   }, []);
 
+  const handleStatusChange = async (
+    studioId: string,
+    currentStatus: "active" | "inactive",
+  ) => {
+    const newStatus = currentStatus === "active" ? "inactive" : "active";
+
+    try {
+      setUpdatingId(studioId);
+
+      // Step 1: Create a fresh JWT cookie
+      const cookieResponse = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/auth/set-jwt-cookie`,
+        {
+          method: "POST",
+          credentials: "include",
+        },
+      );
+
+      if (!cookieResponse.ok) {
+        throw new Error("Authentication failed. Please login again.");
+      }
+
+      // Step 2: Update studio status
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/studios/${studioId}/status`,
+        {
+          method: "PATCH",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ status: newStatus }),
+        },
+      );
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.message || "Failed to update studio status");
+      }
+
+      setStudios((previousStudios) =>
+        previousStudios.map((studio) =>
+          studio._id === studioId ? { ...studio, status: newStatus } : studio,
+        ),
+      );
+
+      toast.success(`Studio is now ${newStatus}`);
+    } catch (error) {
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "Failed to update studio status",
+      );
+    } finally {
+      setUpdatingId(null);
+    }
+  };
   if (loading) {
     return (
       <main className="container mx-auto px-4 py-12">Loading studios...</main>
+    );
+  }
+
+  if (error) {
+    return (
+      <main className="container mx-auto px-4 py-12">
+        <p className="text-destructive">{error}</p>
+      </main>
     );
   }
 
@@ -67,13 +146,16 @@ function MyListingsContent() {
                 height={400}
                 className="h-48 w-full object-cover"
               />
+
               <CardHeader>
                 <CardTitle>{studio.title}</CardTitle>
               </CardHeader>
+
               <CardContent>
                 <p className="text-sm text-muted-foreground">
                   {studio.category} · {studio.location}
                 </p>
+
                 <p className="mt-2">
                   Maximum Capacity: {studio.capacity} guests
                 </p>
@@ -82,11 +164,40 @@ function MyListingsContent() {
                   ${studio.hourlyRate} / hour
                 </p>
 
-                <Link href={`/edit-studio/${studio._id}`}>
-                  <Button variant="outline" className="mt-4 w-full">
-                    Edit Studio
-                  </Button>
-                </Link>
+                <p className="mt-3 text-sm font-semibold">
+                  Status:{" "}
+                  <span
+                    className={
+                      studio.status === "active"
+                        ? "text-green-600"
+                        : "text-red-500"
+                    }
+                  >
+                    {studio.status}
+                  </span>
+                </p>
+
+                <Button
+                  variant="outline"
+                  className="mt-4 w-full"
+                  disabled={updatingId === studio._id}
+                  onClick={() => handleStatusChange(studio._id, studio.status)}
+                >
+                  {updatingId === studio._id
+                    ? "Updating..."
+                    : studio.status === "active"
+                      ? "Inactive"
+                      : "Active"}
+                </Button>
+
+                <Button
+                  variant="outline"
+                  className="mt-4 w-full"
+                  onClick={() => setSelectedStudioId(studio._id)}
+                >
+                  <Pencil className="mr-2 h-4 w-4" />
+                  Edit Studio
+                </Button>
 
                 <Link href={`/delete-studio/${studio._id}`}>
                   <Button variant="destructive" className="mt-4 w-full">
@@ -99,9 +210,26 @@ function MyListingsContent() {
           ))}
         </div>
       )}
+      <EditStudioform
+        studioId={selectedStudioId}
+        onClose={() => setSelectedStudioId(null)}
+        onUpdated={async () => {
+          const response = await fetch(
+            `${process.env.NEXT_PUBLIC_API_URL}/api/my-studios`,
+            { credentials: "include" },
+          );
+
+          const result = await response.json();
+
+          if (response.ok) {
+            setStudios(result.data);
+          }
+        }}
+      />
     </main>
   );
 }
+
 export default function MyListingsPage() {
   return (
     <ProtectedRoute>
