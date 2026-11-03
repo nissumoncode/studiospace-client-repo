@@ -58,7 +58,7 @@ StudioSpace is a creative studio marketplace where users can explore creative sp
 - Render (Backend)
 - MongoDB Atlas (Database)
 
-**##Clien**
+**## Clien**
 
 **## Clone the client repository:**
 
@@ -69,7 +69,6 @@ git clone https://github.com/nissumoncode/studiospace-client-repo.git
 **## Navigate to the project:**
 
 ```bash
-
 cd studiospace-client-repo
 ```
 

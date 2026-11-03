@@ -3,8 +3,8 @@
 import { useEffect, useState, type FormEvent } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { toast } from "sonner";
+import Image from "next/image";
 import ProtectedRoute from "@/components/ProtectedRoute/ProtectedRoute";
-import { authClient } from "@/lib/auth-client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -35,10 +35,9 @@ function EditStudioContent() {
   const router = useRouter();
   const id = params.id as string;
 
-  const { data: session } = authClient.useSession();
-
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
 
   const [formData, setFormData] = useState<Studio>({
     title: "",
@@ -121,18 +120,55 @@ function EditStudioContent() {
     }));
   }
 
+  async function uploadImage(file: File): Promise<string> {
+    const imageFormData = new FormData();
+    imageFormData.append("image", file);
+
+    const response = await fetch("/api/upload-image", {
+      method: "POST",
+      body: imageFormData,
+    });
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      throw new Error(result.message || "Image upload failed");
+    }
+
+    return result.imageUrl;
+  }
+
   async function handleUpdate(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
+
+    const form = new FormData(e.currentTarget);
+    const imageFile = form.get("image");
+
     setUpdating(true);
 
     try {
+      let imageUrl = formData.image;
+
+      if (imageFile instanceof File && imageFile.size > 0) {
+        setIsUploading(true);
+        imageUrl = await uploadImage(imageFile);
+      }
+
+      const updatedData = {
+        ...formData,
+        capacity: formData.maxCapacity,
+        image: imageUrl,
+      };
+
+      delete (updatedData as Partial<Studio>).maxCapacity;
+
       const response = await fetch(`${API_URL}/api/studios/${id}`, {
         method: "PUT",
         credentials: "include",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(updatedData),
       });
 
       const result = await response.json();
@@ -150,6 +186,7 @@ function EditStudioContent() {
       );
     } finally {
       setUpdating(false);
+      setIsUploading(false);
     }
   }
 
@@ -202,6 +239,7 @@ function EditStudioContent() {
                   required
                 />
               </div>
+
               <div>
                 <label className="mb-2 block text-sm font-medium">
                   Daily Rate
@@ -294,15 +332,25 @@ function EditStudioContent() {
 
             <div>
               <label className="mb-2 block text-sm font-medium">
-                Image URL
+                Choose Studio Image
               </label>
-              <Input
-                name="image"
-                type="url"
-                value={formData.image}
-                onChange={handleChange}
-                required
-              />
+
+              {formData.image && (
+                <Image
+                  src={formData.image}
+                  alt="Current studio"
+                  width={128}
+                  height={128}
+                  unoptimized
+                  className="mb-3 h-32 w-32 rounded-md object-cover"
+                />
+              )}
+
+              <Input name="image" type="file" accept="image/*" />
+
+              <p className="mt-1 text-xs text-muted-foreground">
+                Select a new image only if you want to replace the current one.
+              </p>
             </div>
 
             <div>
@@ -351,7 +399,11 @@ function EditStudioContent() {
             </div>
 
             <Button type="submit" className="w-full" disabled={updating}>
-              {updating ? "Updating..." : "Update Studio"}
+              {updating
+                ? isUploading
+                  ? "Uploading Image..."
+                  : "Updating..."
+                : "Update Studio"}
             </Button>
           </form>
         </CardContent>
@@ -359,6 +411,7 @@ function EditStudioContent() {
     </main>
   );
 }
+
 export default function EditStudioPage() {
   return (
     <ProtectedRoute>
