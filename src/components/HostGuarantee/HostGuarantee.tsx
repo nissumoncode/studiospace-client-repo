@@ -24,9 +24,9 @@ const guarantees = [
   },
   {
     icon: Headset,
-    title: "24/7 Creator Support",
+    title: "24/7 Host Support",
     description:
-      "Get help whenever you need it from our dedicated creator support team.",
+      "Get help whenever you need it from our dedicated host support team.",
   },
 ];
 

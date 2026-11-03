@@ -6,28 +6,28 @@ import { Card, CardContent } from "@/components/ui/card";
 const steps = [
   {
     number: "01",
-    title: "Find Your Studio",
+    title: "Discover Spaces",
     description:
       "Explore creative spaces and find the perfect studio for your project.",
     icon: Search,
   },
   {
     number: "02",
-    title: "Choose Your Date",
+    title: "Select Shoot Hours",
     description:
       "Check availability and select the date and time that work for you.",
     icon: CalendarDays,
   },
   {
     number: "03",
-    title: "Book Your Space",
+    title: "Book Instantly",
     description:
       "Confirm your booking and get ready for your creative session.",
     icon: CreditCard,
   },
   {
     number: "04",
-    title: "Create Something Amazing",
+    title: "Create & Produce",
     description:
       "Arrive at your studio and bring your creative vision to life.",
     icon: Sparkles,

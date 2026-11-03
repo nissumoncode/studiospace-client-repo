@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, Pagination } from "swiper/modules";
+import { authClient } from "@/lib/auth-client";
 
 import "swiper/css";
 import "swiper/css/pagination";
@@ -38,6 +39,7 @@ const slides = [
 ];
 
 export default function Hero() {
+  const { data: session } = authClient.useSession();
   return (
     <section className="mx-auto w-full max-w-7xl px-4 pt-5 sm:px-6 sm:pt-7 lg:px-8 lg:pt-8">
       <Swiper
@@ -82,7 +84,7 @@ export default function Hero() {
                     </Link>
 
                     <Link
-                      href="/studios"
+                      href={session ? "/add-studio" : "/login"}
                       className="rounded-lg border border-white/60 px-5 py-3 text-sm font-semibold text-white transition hover:bg-white/15 sm:px-7 sm:py-3.5 sm:text-base"
                     >
                       Host Your Space
