@@ -30,25 +30,20 @@ export default function Navbar() {
 
   const [menuOpen, setMenuOpen] = useState(false);
   const [hash, setHash] = useState("");
-  const [theme, setTheme] = useState<"light" | "dark">("light");
-  const [mounted, setMounted] = useState(false);
 
   // Load saved theme
   useEffect(() => {
     const savedTheme = localStorage.getItem("theme");
     const initialTheme = savedTheme === "dark" ? "dark" : "light";
 
-    setTheme(initialTheme);
     document.documentElement.classList.toggle("dark", initialTheme === "dark");
-
-    setMounted(true);
   }, []);
 
   // Theme toggle
   function handleThemeToggle() {
-    const nextTheme = theme === "dark" ? "light" : "dark";
+    const isDark = document.documentElement.classList.contains("dark");
+    const nextTheme = isDark ? "light" : "dark";
 
-    setTheme(nextTheme);
     document.documentElement.classList.toggle("dark", nextTheme === "dark");
     localStorage.setItem("theme", nextTheme);
   }
@@ -234,11 +229,8 @@ export default function Navbar() {
             aria-label="Toggle theme"
             className="rounded-lg border p-2 transition-colors hover:bg-accent"
           >
-            {mounted && theme === "dark" ? (
-              <Sun size={20} />
-            ) : (
-              <Moon size={20} />
-            )}
+            <Sun className="hidden dark:block" size={20} />
+            <Moon className="block dark:hidden" size={20} />
           </button>
         </div>
 
@@ -361,17 +353,17 @@ export default function Navbar() {
                 onClick={handleThemeToggle}
                 className="flex w-full items-center justify-between rounded-lg px-4 py-3 text-sm font-medium hover:bg-accent"
               >
-                <span>
-                  {theme === "dark"
-                    ? "Switch to Light Mode"
-                    : "Switch to Dark Mode"}
-                </span>
+                <div>
+                  <span className="hidden dark:inline">
+                    Switch to Light Mode
+                  </span>
+                  <span className="dark:hidden">Switch to Dark Mode</span>
+                </div>
 
-                {mounted && theme === "dark" ? (
-                  <Sun size={20} />
-                ) : (
-                  <Moon size={20} />
-                )}
+                <div className="flex">
+                  <Sun className="hidden dark:block" size={20} />
+                  <Moon className="block dark:hidden" size={20} />
+                </div>
               </button>
             </div>
           </div>
