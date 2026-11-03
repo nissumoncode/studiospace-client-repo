@@ -56,7 +56,10 @@ export default function DeleteStudioPage() {
     async function fetchStudio() {
       try {
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/api/studios/${id}`,
+          `${process.env.NEXT_PUBLIC_API_URL}/api/my-studios/${id}`,
+          {
+            credentials: "include",
+          },
         );
 
         const result = await response.json();
