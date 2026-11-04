@@ -154,7 +154,7 @@ export default function Navbar() {
 
         {/* Desktop Actions */}
         <div className="hidden items-center gap-3 lg:flex">
-          {isPending ? null : session?.user ? (
+          {session?.user ? (
             <DropdownMenu>
               <div className="flex items-center gap-2">
                 <Avatar className="size-8">
@@ -273,7 +273,7 @@ export default function Navbar() {
 
             {/* Mobile Account */}
             <div className="mt-3 border-t border-border pt-4">
-              {isPending ? null : session?.user ? (
+              {session?.user ? (
                 <>
                   <div className="mb-3 flex items-center gap-3 px-3">
                     <Avatar>

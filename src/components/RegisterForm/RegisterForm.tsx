@@ -53,12 +53,12 @@ export default function RegisterForm() {
     const password = formData.get("password") as string;
 
     if (
-      password.length < 8 ||
+      password.length < 6 ||
       !/[A-Z]/.test(password) ||
       !/[a-z]/.test(password)
     ) {
       toast.error(
-        "Password must be at least 8 characters long and contain at least one uppercase and one lowercase letter.",
+        "Password must be at least 6 characters long and contain at least one uppercase and one lowercase letter.",
       );
       return;
     }
@@ -180,7 +180,7 @@ export default function RegisterForm() {
                   placeholder="Create a password"
                   className="h-11 pl-10 pr-10"
                   required
-                  minLength={8}
+                  minLength={6}
                 />
 
                 <button
@@ -194,7 +194,7 @@ export default function RegisterForm() {
               </div>
 
               <p className="text-xs leading-5 text-muted-foreground">
-                Password must contain at least 8 characters, one uppercase and
+                Password must contain at least 6 characters, one uppercase and
                 one lowercase letter.
               </p>
             </div>

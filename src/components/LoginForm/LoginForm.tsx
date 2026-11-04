@@ -69,12 +69,7 @@ export default function LoginForm() {
 
     if (error) {
       toast.error(error.message || "Google login failed");
-      return;
     }
-
-    toast.success("Google login successful!");
-    router.push(getCallbackURL());
-    router.refresh();
   }
 
   return (
@@ -121,12 +116,13 @@ export default function LoginForm() {
                   Password
                 </label>
 
-                <Link
-                  href="/forgot-password"
+                <a
+                  href="#"
+                  onClick={(e) => e.preventDefault()}
                   className="text-xs font-medium text-primary hover:underline"
                 >
                   Forgot Password?
-                </Link>
+                </a>
               </div>
 
               <div className="relative">

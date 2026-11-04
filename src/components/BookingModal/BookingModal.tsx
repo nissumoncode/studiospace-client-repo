@@ -69,8 +69,12 @@ export default function BookingModal({
       return;
     }
 
-    if (Number(guests) < 1 || Number(guests) > studio.capacity) {
-      toast.error("Guest count studio capacity-এর মধ্যে হতে হবে");
+    if (
+      !Number.isInteger(Number(guests)) ||
+      Number(guests) < 1 ||
+      Number(guests) > studio.capacity
+    ) {
+      toast.error("Guest count must be a whole number within studio capacity.");
       return;
     }
 

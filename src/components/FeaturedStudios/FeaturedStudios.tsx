@@ -36,7 +36,7 @@ export default function FeaturedStudios() {
         const result = await response.json();
         setStudios(result.data);
       } catch {
-        setError("Studios load করা যায়নি। আবার চেষ্টা করো।");
+        setError("loading Studios");
       } finally {
         setLoading(false);
       }

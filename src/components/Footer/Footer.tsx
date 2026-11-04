@@ -156,19 +156,13 @@ export default function Footer() {
           </p>
 
           <div className="flex items-center gap-5">
-            <Link
-              href="/terms"
-              className="text-sm text-muted-foreground hover:text-primary"
-            >
+            <span className="text-sm text-muted-foreground">
               Terms of Service
-            </Link>
+            </span>
 
-            <Link
-              href="/privacy"
-              className="text-sm text-muted-foreground hover:text-primary"
-            >
+            <span className="text-sm text-muted-foreground">
               Privacy Policy
-            </Link>
+            </span>
           </div>
         </div>
       </div>
