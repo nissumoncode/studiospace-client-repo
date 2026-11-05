@@ -43,6 +43,16 @@ function ExploreStudiosContent() {
   const [error, setError] = useState("");
   const [retryCount, setRetryCount] = useState(0);
 
+  // Keep the selected category in sync when the URL query changes
+  // (e.g. clicking a category link while already on /studios).
+  useEffect(() => {
+    const categoryParam = searchParams.get("category") || "All";
+
+    setSelectedCategory((previous) =>
+      previous === categoryParam ? previous : categoryParam,
+    );
+  }, [searchParams]);
+
   useEffect(() => {
     const fetchStudios = async () => {
       try {

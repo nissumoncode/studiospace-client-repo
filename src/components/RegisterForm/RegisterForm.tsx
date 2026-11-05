@@ -30,6 +30,7 @@ import {
 
 export default function RegisterForm() {
   const [showPassword, setShowPassword] = useState(false);
+  const [passwordError, setPasswordError] = useState("");
   const router = useRouter();
 
   async function handleGoogleRegister() {
@@ -57,11 +58,14 @@ export default function RegisterForm() {
       !/[A-Z]/.test(password) ||
       !/[a-z]/.test(password)
     ) {
-      toast.error(
-        "Password must be at least 6 characters long and contain at least one uppercase and one lowercase letter.",
+      setPasswordError(
+        "Password must be at least 6 characters and include at least one uppercase and one lowercase letter.",
       );
       return;
     }
+
+    setPasswordError("");
+
     const { error } = await authClient.signUp.email({
       name,
       email,
@@ -181,6 +185,7 @@ export default function RegisterForm() {
                   className="h-11 pl-10 pr-10"
                   required
                   minLength={6}
+                  onChange={() => setPasswordError("")}
                 />
 
                 <button
@@ -197,6 +202,12 @@ export default function RegisterForm() {
                 Password must contain at least 6 characters, one uppercase and
                 one lowercase letter.
               </p>
+
+              {passwordError && (
+                <p className="text-xs font-medium text-red-600">
+                  {passwordError}
+                </p>
+              )}
             </div>
 
             <Button type="submit" className="h-11 w-full">

@@ -1,22 +1,16 @@
-**## StudioSpace – Creative Studio Marketplace**
+# StudioSpace – Creative Studio Marketplace
 
-**## Live Website:**
+**Live Website:** [https://studiospace-marketplace.vercel.app](https://studiospace-marketplace.vercel.app)
 
-[https://studiospace-marketplace.vercel.app](https://studiospace-marketplace.vercel.app)
+**Client Repository:** [studiospace-client-repo](https://github.com/nissumoncode/studiospace-client-repo)
 
-**## studiospace-client-repo:**
+**Server Repository:** [studiospace-server-repo](https://github.com/nissumoncode/studiospace-server-repo)
 
-[https://github.com/nissumoncode/studiospace-client-repo](https://github.com/nissumoncode/studiospace-client-repo)
-
-**## studiospace-server-repo:**
-
-[https://github.com/nissumoncode/studiospace-server-repo](https://github.com/nissumoncode/studiospace-server-repo)
-
-**### About the Project:**
+## About the Project
 
 StudioSpace is a creative studio marketplace where users can explore creative spaces, view studio details, and book studios for their projects. Studio owners can list and manage their studios, while users can manage their bookings through their accounts.
 
-**### Features:**
+## Features
 
 - User registration and login with email and password.
 - Google authentication.
@@ -33,9 +27,9 @@ StudioSpace is a creative studio marketplace where users can explore creative sp
 - Responsive user interface for different screen sizes.
 - Loading states, error handling, and empty states.
 
-**### Technologies Used:**
+## Technologies Used
 
-**Frontend**
+### Frontend
 
 - Next.js
 - React
@@ -44,7 +38,7 @@ StudioSpace is a creative studio marketplace where users can explore creative sp
 - shadcn/ui
 - Better Auth
 
-**Backend**
+### Backend
 
 - Node.js
 - Express.js
@@ -52,72 +46,73 @@ StudioSpace is a creative studio marketplace where users can explore creative sp
 - Better Auth
 - JWT Authentication
 
-**Deployment**
+### Deployment
 
 - Vercel (Frontend)
 - Render (Backend)
 - MongoDB Atlas (Database)
 
-**## Client**
+## Local Setup
 
-**## Clone the client repository:**
+### Client
 
-```bash
-git clone https://github.com/nissumoncode/studiospace-client-repo.git
-```
+1. Clone the client repository:
 
-**## Navigate to the project:**
+   ```bash
+   git clone https://github.com/nissumoncode/studiospace-client-repo.git
+   ```
 
-```bash
-cd studiospace-client-repo
-```
+2. Navigate to the project:
 
-**## Install dependencies:**
+   ```bash
+   cd studiospace-client-repo
+   ```
 
-```bash
-npm install
-```
+3. Install dependencies:
 
-**## Start the development server:**
+   ```bash
+   npm install
+   ```
 
-```bash
-npm run dev
-```
+4. Start the development server:
 
-**## Server **
+   ```bash
+   npm run dev
+   ```
 
-**## Clone the server repository:**
+### Server
 
-```bash
-git clone https://github.com/nissumoncode/studiospace-server-repo.git
-```
+1. Clone the server repository:
 
-**## Navigate to the project:**
+   ```bash
+   git clone https://github.com/nissumoncode/studiospace-server-repo.git
+   ```
 
-```bash
-cd studiospace-server-repo
-```
+2. Navigate to the project:
 
-**## Install dependencies:**
+   ```bash
+   cd studiospace-server-repo
+   ```
 
-```bash
-npm install
-```
+3. Install dependencies:
 
-**## Start the server:**
+   ```bash
+   npm install
+   ```
 
-```bash
-node index.js
-```
+4. Start the server:
 
-**## Examiner Test Credentials:**
+   ```bash
+   node index.js
+   ```
 
-**Email:** [tastingacount60@gmail.com]
+## Examiner Test Credentials
 
-**Password:** [TastingAcount60]
+**Email:** tastingacount60@gmail.com
+**Password:** TastingAcount60
 
 Use these credentials to test the authenticated features of StudioSpace.
 
-**## Author**
+## Author
 
 Developed as a creative studio marketplace project using Next.js, Express.js, MongoDB, and TypeScript.

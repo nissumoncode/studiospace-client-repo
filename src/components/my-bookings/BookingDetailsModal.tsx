@@ -180,7 +180,7 @@ export default function BookingDetailsModal({
                   <div>
                     <p className="text-muted-foreground">Rate</p>
                     <p className="mt-1 font-semibold">
-                      ৳{Number(booking.rate || 0).toLocaleString("en-BD")}
+                      ${Number(booking.rate || 0).toLocaleString("en-BD")}
                       {booking.bookingType ? ` / ${booking.bookingType}` : ""}
                     </p>
                   </div>
@@ -188,7 +188,7 @@ export default function BookingDetailsModal({
                   <div>
                     <p className="text-muted-foreground">Security Deposit</p>
                     <p className="mt-1 font-semibold">
-                      ৳
+                      $
                       {Number(booking.securityDeposit || 0).toLocaleString(
                         "en-BD",
                       )}
@@ -199,7 +199,7 @@ export default function BookingDetailsModal({
                 <div className="mt-4 flex items-center justify-between rounded-lg bg-muted p-3">
                   <span className="font-semibold">Total Price</span>
                   <span className="text-xl font-bold text-primary">
-                    ৳{Number(booking.totalPrice || 0).toLocaleString("en-BD")}
+                    ${Number(booking.totalPrice || 0).toLocaleString("en-BD")}
                   </span>
                 </div>
               </div>

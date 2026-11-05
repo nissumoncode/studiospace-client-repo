@@ -105,6 +105,18 @@ function MyBookingsContent() {
     try {
       setProcessingId(bookingId);
 
+      const cookieResponse = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/auth/set-jwt-cookie`,
+        {
+          method: "POST",
+          credentials: "include",
+        },
+      );
+
+      if (!cookieResponse.ok) {
+        throw new Error("Authentication failed. Please login again.");
+      }
+
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/api/bookings/${bookingId}/cancel`,
         {

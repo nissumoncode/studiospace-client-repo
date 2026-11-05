@@ -7,6 +7,7 @@ import { toast } from "sonner";
 
 import { authClient } from "@/lib/auth-client";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   AlertDialog,
@@ -131,7 +132,23 @@ export default function DeleteStudioPage() {
   }
 
   if (loading || isPending) {
-    return <main className="container mx-auto px-4 py-12">Loading...</main>;
+    return (
+      <main className="container mx-auto px-4 py-12">
+        <div className="mx-auto max-w-2xl overflow-hidden rounded-2xl border border-border">
+          <Skeleton className="h-64 w-full rounded-none" />
+          <div className="space-y-5 p-6">
+            <Skeleton className="h-6 w-3/4" />
+            <Skeleton className="h-4 w-1/2" />
+            <Skeleton className="h-4 w-full" />
+            <Skeleton className="h-4 w-full" />
+            <div className="flex gap-3 pt-2">
+              <Skeleton className="h-10 flex-1" />
+              <Skeleton className="h-10 flex-1" />
+            </div>
+          </div>
+        </div>
+      </main>
+    );
   }
 
   if (!studio) {

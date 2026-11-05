@@ -187,6 +187,10 @@ export default function Navbar() {
                   </p>
                 </div>
 
+                <DropdownMenuItem onClick={() => router.push("/dashboard")}>
+                  Dashboard
+                </DropdownMenuItem>
+
                 <DropdownMenuItem onClick={() => router.push("/add-studio")}>
                   Add New Studio
                 </DropdownMenuItem>

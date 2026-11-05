@@ -185,7 +185,7 @@ export default function BookingCard({
                 Total Price
               </div>
               <p className="text-lg font-bold text-primary">
-                ৳{Number(booking.totalPrice || 0).toLocaleString("en-BD")}
+                ${Number(booking.totalPrice || 0).toLocaleString("en-BD")}
               </p>
             </div>
           </div>

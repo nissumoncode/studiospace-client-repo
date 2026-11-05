@@ -8,7 +8,7 @@ import ProtectedRoute from "@/components/ProtectedRoute/ProtectedRoute";
 import { Button } from "@/components/ui/button";
 import { Trash2, Pencil } from "lucide-react";
 import { toast } from "sonner";
-import EditStudioform from "@/components/EditStudioform/EditStudioform";
+import { Skeleton } from "@/components/ui/skeleton";
 
 type Studio = {
   _id: string;
@@ -25,7 +25,6 @@ function MyListingsContent() {
   const [studios, setStudios] = useState<Studio[]>([]);
   const [loading, setLoading] = useState(true);
   const [updatingId, setUpdatingId] = useState<string | null>(null);
-  const [selectedStudioId, setSelectedStudioId] = useState<string | null>(null);
   const [error, setError] = useState("");
 
   useEffect(() => {
@@ -115,7 +114,26 @@ function MyListingsContent() {
   };
   if (loading) {
     return (
-      <main className="container mx-auto px-4 py-12">Loading studios...</main>
+      <main className="container mx-auto px-4 py-12">
+        <Skeleton className="h-10 w-64" />
+
+        <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {Array.from({ length: 6 }).map((_, index) => (
+            <Card key={index} className="overflow-hidden">
+              <Skeleton className="h-48 w-full rounded-none" />
+              <CardHeader>
+                <Skeleton className="h-6 w-3/4" />
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <Skeleton className="h-4 w-full" />
+                <Skeleton className="h-4 w-1/2" />
+                <Skeleton className="h-4 w-1/3" />
+                <Skeleton className="h-9 w-full" />
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </main>
     );
   }
 
@@ -132,9 +150,19 @@ function MyListingsContent() {
       <h1 className="text-3xl font-bold text-primary">My Studio Listings</h1>
 
       {studios.length === 0 ? (
-        <p className="mt-6 text-muted-foreground">
-          You haven&apos;t added any studios yet.
-        </p>
+        <div className="mt-8 rounded-2xl border border-dashed py-16 text-center">
+          <p className="text-muted-foreground">
+            You haven&apos;t added any studios yet.
+          </p>
+
+          <Button
+            nativeButton={false}
+            className="mt-5"
+            render={<Link href="/add-studio" />}
+          >
+            Add Your First Studio
+          </Button>
+        </div>
       ) : (
         <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {studios.map((studio) => (
@@ -190,14 +218,12 @@ function MyListingsContent() {
                       : "Active"}
                 </Button>
 
-                <Button
-                  variant="outline"
-                  className="mt-4 w-full"
-                  onClick={() => setSelectedStudioId(studio._id)}
-                >
-                  <Pencil className="mr-2 h-4 w-4" />
-                  Edit Studio
-                </Button>
+                <Link href={`/studios/edit/${studio._id}`}>
+                  <Button variant="outline" className="mt-4 w-full">
+                    <Pencil className="mr-2 h-4 w-4" />
+                    Edit Studio
+                  </Button>
+                </Link>
 
                 <Link href={`/delete-studio/${studio._id}`}>
                   <Button variant="destructive" className="mt-4 w-full">
@@ -210,22 +236,6 @@ function MyListingsContent() {
           ))}
         </div>
       )}
-      <EditStudioform
-        studioId={selectedStudioId}
-        onClose={() => setSelectedStudioId(null)}
-        onUpdated={async () => {
-          const response = await fetch(
-            `${process.env.NEXT_PUBLIC_API_URL}/api/my-studios`,
-            { credentials: "include" },
-          );
-
-          const result = await response.json();
-
-          if (response.ok) {
-            setStudios(result.data);
-          }
-        }}
-      />
     </main>
   );
 }

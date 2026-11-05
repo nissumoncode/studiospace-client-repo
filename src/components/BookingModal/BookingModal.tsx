@@ -60,12 +60,12 @@ export default function BookingModal({
     const todayString = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
 
     if (!date || date < todayString || !startTime) {
-      toast.error("সঠিক date ও start time নির্বাচন করো");
+      toast.error("Please select a valid future date and start time");
       return;
     }
 
     if (!Number.isInteger(Number(duration)) || Number(duration) < 1) {
-      toast.error("Duration কমপক্ষে ১ হতে হবে");
+      toast.error("Duration must be at least 1");
       return;
     }
 
@@ -90,6 +90,9 @@ export default function BookingModal({
 
       if (!cookieResponse.ok) {
         toast.error("Authentication failed. Please login again.");
+        router.replace(
+          `/login?callbackURL=${encodeURIComponent(`/studios/${studio._id}`)}`,
+        );
         return;
       }
       const response = await fetch(
@@ -206,11 +209,11 @@ export default function BookingModal({
               Duration: {duration} {bookingType}
             </p>
             <p>
-              Rate: ৳{rate} / {bookingType}
+              Rate: ${rate} / {bookingType}
             </p>
-            <p>Security deposit: ৳{studio.securityDeposit}</p>
+            <p>Security deposit: ${studio.securityDeposit}</p>
             <p className="mt-2 font-bold">
-              Total: ৳{totalPrice + studio.securityDeposit}
+              Total: ${totalPrice + studio.securityDeposit}
             </p>
           </div>
 

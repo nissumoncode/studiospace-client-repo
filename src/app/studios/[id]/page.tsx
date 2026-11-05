@@ -1,13 +1,15 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import Image from "next/image";
 import { MapPin, Star, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination } from "swiper/modules";
 import BookingModal from "@/components/BookingModal/BookingModal";
+import { authClient } from "@/lib/auth-client";
+import { Skeleton } from "@/components/ui/skeleton";
 
 import "swiper/css";
 import "swiper/css/navigation";
@@ -36,10 +38,25 @@ interface Studio {
 
 export default function StudioDetailsPage() {
   const { id } = useParams<{ id: string }>();
+  const router = useRouter();
+  const { data: session, isPending } = authClient.useSession();
   const [studio, setStudio] = useState<Studio | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [isBookingOpen, setIsBookingOpen] = useState(false);
+
+  function handleBookClick() {
+    if (isPending) return;
+
+    if (!session) {
+      router.replace(
+        `/login?callbackURL=${encodeURIComponent(`/studios/${id}`)}`,
+      );
+      return;
+    }
+
+    setIsBookingOpen(true);
+  }
 
   useEffect(() => {
     const fetchStudio = async () => {
@@ -51,12 +68,12 @@ export default function StudioDetailsPage() {
         const result = await response.json();
 
         if (!response.ok) {
-          throw new Error(result.message || "Studio load করা যায়নি");
+          throw new Error(result.message || "Failed to load studio");
         }
 
         setStudio(result.data);
       } catch {
-        setError("Studio load করা যায়নি। আবার চেষ্টা করো।");
+        setError("Failed to load studio. Please try again.");
       } finally {
         setLoading(false);
       }
@@ -66,13 +83,33 @@ export default function StudioDetailsPage() {
   }, [id]);
 
   if (loading) {
-    return <p className="py-20 text-center">Loading studio...</p>;
+    return (
+      <main className="mx-auto w-full max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
+        <Skeleton className="mb-8 h-10 w-64" />
+
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {Array.from({ length: 3 }).map((_, index) => (
+            <Skeleton key={index} className="h-64 w-full rounded-2xl" />
+          ))}
+        </div>
+
+        <div className="mt-8 grid gap-8 lg:grid-cols-[1fr_320px]">
+          <div className="space-y-4">
+            <Skeleton className="h-6 w-40" />
+            <Skeleton className="h-4 w-full" />
+            <Skeleton className="h-4 w-full" />
+            <Skeleton className="h-4 w-3/4" />
+          </div>
+          <Skeleton className="h-80 w-full rounded-2xl" />
+        </div>
+      </main>
+    );
   }
 
   if (error || !studio) {
     return (
       <p className="py-20 text-center text-muted-foreground">
-        {error || "Studio পাওয়া যায়নি।"}
+        {error || "Studio not found."}
       </p>
     );
   }
@@ -157,16 +194,32 @@ export default function StudioDetailsPage() {
             ))}
           </ul>
 
+          <h2 className="mt-8 text-xl font-bold text-foreground">Reviews</h2>
+          <p className="mt-3 flex items-center gap-2 text-muted-foreground">
+            <Star size={16} className="fill-accent text-accent" />
+            {studio.rating > 0 ? (
+              <>
+                <strong className="text-foreground">{studio.rating}</strong>
+                <span>
+                  ({studio.totalReviews ?? 0}{" "}
+                  {studio.totalReviews === 1 ? "review" : "reviews"})
+                </span>
+              </>
+            ) : (
+              "No reviews yet"
+            )}
+          </p>
+
           <h2 className="mt-8 text-xl font-bold text-foreground">Hosted by</h2>
           <p className="mt-2 text-muted-foreground">{studio.hostName}</p>
         </section>
 
         <aside className="h-fit rounded-2xl border border-border bg-card p-6">
           <div className="space-y-2">
-            <p>Hourly: ৳{studio.hourlyRate}</p>
-            <p>Daily: ৳{studio.dailyRate}</p>
-            <p>Monthly: ৳{studio.monthlyRate}</p>
-            <p>Yearly: ৳{studio.yearlyRate}</p>
+            <p>Hourly: ${studio.hourlyRate}</p>
+            <p>Daily: ${studio.dailyRate}</p>
+            <p>Monthly: ${studio.monthlyRate}</p>
+            <p>Yearly: ${studio.yearlyRate}</p>
           </div>
 
           <p className="mt-3 flex items-center gap-2 text-sm text-muted-foreground">
@@ -175,14 +228,14 @@ export default function StudioDetailsPage() {
           </p>
 
           <p className="mt-4 text-sm text-muted-foreground">
-            Security deposit: ৳{studio.securityDeposit}
+            Security deposit: ${studio.securityDeposit}
           </p>
           <p className="mt-2 text-sm text-muted-foreground">
             Maximum capacity: {studio.capacity} people
           </p>
 
           <button
-            onClick={() => setIsBookingOpen(true)}
+            onClick={handleBookClick}
             type="button"
             className="mt-6 w-full rounded-lg bg-primary px-5 py-3 font-semibold text-primary-foreground"
           >

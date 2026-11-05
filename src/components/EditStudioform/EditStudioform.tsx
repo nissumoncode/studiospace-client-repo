@@ -6,6 +6,7 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Dialog,
   DialogContent,
@@ -16,12 +17,12 @@ import {
 type Studio = {
   title: string;
   category: string;
-  hourlyRate: number;
-  dailyRate: number;
-  monthlyRate: number;
-  yearlyRate: number;
-  securityDeposit: number;
-  maxCapacity: number;
+  hourlyRate: number | "";
+  dailyRate: number | "";
+  monthlyRate: number | "";
+  yearlyRate: number | "";
+  securityDeposit: number | "";
+  maxCapacity: number | "";
   location: string;
   address: string;
   image: string;
@@ -37,7 +38,16 @@ type Props = {
   onUpdated: () => void;
 };
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
+const API_URL = process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, "");
+
+const numericFields = new Set<string>([
+  "hourlyRate",
+  "dailyRate",
+  "monthlyRate",
+  "yearlyRate",
+  "securityDeposit",
+  "maxCapacity",
+]);
 
 const initialFormData: Studio = {
   title: "",
@@ -70,12 +80,19 @@ export default function EditStudioform({
   useEffect(() => {
     if (!studioId) return;
 
+    const controller = new AbortController();
+
     async function fetchStudio() {
       setLoading(true);
 
       try {
+        if (!API_URL) {
+          throw new Error("API URL is not configured.");
+        }
+
         const response = await fetch(`${API_URL}/api/my-studios/${studioId}`, {
           credentials: "include",
+          signal: controller.signal,
         });
 
         const result = await response.json();
@@ -89,11 +106,11 @@ export default function EditStudioform({
         setFormData({
           title: studio.title || "",
           category: studio.category || "",
-          hourlyRate: studio.hourlyRate || 0,
-          dailyRate: studio.dailyRate || 0,
-          monthlyRate: studio.monthlyRate || 0,
-          yearlyRate: studio.yearlyRate || 0,
-          securityDeposit: studio.securityDeposit || 0,
+          hourlyRate: studio.hourlyRate ?? 0,
+          dailyRate: studio.dailyRate ?? 0,
+          monthlyRate: studio.monthlyRate ?? 0,
+          yearlyRate: studio.yearlyRate ?? 0,
+          securityDeposit: studio.securityDeposit ?? 0,
           maxCapacity: studio.capacity ?? studio.maxCapacity ?? 1,
           location: studio.location || "",
           address: studio.address || "",
@@ -104,15 +121,25 @@ export default function EditStudioform({
           hostEmail: studio.hostEmail || "",
         });
       } catch (error) {
+        if (error instanceof Error && error.name === "AbortError") {
+          return;
+        }
+
         toast.error(
           error instanceof Error ? error.message : "Failed to load studio",
         );
       } finally {
-        setLoading(false);
+        if (!controller.signal.aborted) {
+          setLoading(false);
+        }
       }
     }
 
     fetchStudio();
+
+    return () => {
+      controller.abort();
+    };
   }, [studioId]);
 
   function handleChange(
@@ -122,15 +149,10 @@ export default function EditStudioform({
 
     setFormData((prev) => ({
       ...prev,
-      [name]: [
-        "hourlyRate",
-        "dailyRate",
-        "monthlyRate",
-        "yearlyRate",
-        "securityDeposit",
-        "maxCapacity",
-      ].includes(name)
-        ? Number(value)
+      [name]: numericFields.has(name)
+        ? value === ""
+          ? ""
+          : Number(value)
         : value,
     }));
   }
@@ -150,6 +172,10 @@ export default function EditStudioform({
       throw new Error(result.message || "Image upload failed");
     }
 
+    if (!result.imageUrl) {
+      throw new Error("Image URL was not returned after upload.");
+    }
+
     return result.imageUrl;
   }
 
@@ -164,6 +190,10 @@ export default function EditStudioform({
     setUpdating(true);
 
     try {
+      if (!API_URL) {
+        throw new Error("API URL is not configured.");
+      }
+
       let imageUrl = formData.image;
 
       if (imageFile instanceof File && imageFile.size > 0) {
@@ -181,13 +211,18 @@ export default function EditStudioform({
         throw new Error("Authentication failed. Please login again.");
       }
 
+      const { maxCapacity, ...studioData } = formData;
+
       const updatedData = {
-        ...formData,
-        capacity: formData.maxCapacity,
+        ...studioData,
+        hourlyRate: Number(studioData.hourlyRate),
+        dailyRate: Number(studioData.dailyRate),
+        monthlyRate: Number(studioData.monthlyRate),
+        yearlyRate: Number(studioData.yearlyRate),
+        securityDeposit: Number(studioData.securityDeposit),
+        capacity: Number(maxCapacity),
         image: imageUrl,
       };
-
-      delete (updatedData as Partial<Studio>).maxCapacity;
 
       const response = await fetch(`${API_URL}/api/my-studios/${studioId}`, {
         method: "PUT",
@@ -230,7 +265,15 @@ export default function EditStudioform({
         </DialogHeader>
 
         {loading ? (
-          <p className="py-12 text-center">Loading studio...</p>
+          <div className="space-y-4 py-6">
+            <Skeleton className="h-7 w-40" />
+            {Array.from({ length: 9 }).map((_, index) => (
+              <div key={index} className="space-y-2">
+                <Skeleton className="h-4 w-28" />
+                <Skeleton className="h-10 w-full" />
+              </div>
+            ))}
+          </div>
         ) : (
           <form onSubmit={handleUpdate} className="space-y-5">
             <div>
@@ -274,6 +317,7 @@ export default function EditStudioform({
                     name={name}
                     value={formData[name]}
                     onChange={handleChange}
+                    onFocus={(e) => e.currentTarget.select()}
                     min={name === "securityDeposit" ? "0" : "1"}
                     required
                   />
@@ -290,6 +334,7 @@ export default function EditStudioform({
                 name="maxCapacity"
                 value={formData.maxCapacity}
                 onChange={handleChange}
+                onFocus={(e) => e.currentTarget.select()}
                 min="1"
                 required
               />

@@ -36,7 +36,7 @@ export default function FeaturedStudios() {
         const result = await response.json();
         setStudios(result.data);
       } catch {
-        setError("loading Studios");
+        setError("Failed to load studios. Please try again.");
       } finally {
         setLoading(false);
       }
@@ -127,7 +127,7 @@ export default function FeaturedStudios() {
 
                   <div className="mt-5 flex items-center justify-between border-t border-border pt-4">
                     <p className="font-bold text-foreground">
-                      ৳{studio.hourlyRate}
+                      ${studio.hourlyRate}
                       <span className="text-sm font-normal text-muted-foreground">
                         {" "}
                         / hour
