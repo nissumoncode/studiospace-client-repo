@@ -50,15 +50,13 @@ export default function Navbar() {
 
   // Track URL hash changes
   useEffect(() => {
-    const updateHash = () => {
-      setHash(window.location.hash);
-    };
+    const updateHash = () => setHash(window.location.hash);
 
-    updateHash();
-
+    const timer = setTimeout(updateHash, 0);
     window.addEventListener("hashchange", updateHash);
 
     return () => {
+      clearTimeout(timer);
       window.removeEventListener("hashchange", updateHash);
     };
   }, [pathname]);
@@ -67,14 +65,8 @@ export default function Navbar() {
 
   // Active navigation link
   function isActive(href: string) {
-    if (href === "/") {
-      return pathname === "/" && !isHowItWorks;
-    }
-
-    if (href === "/#how-it-works") {
-      return isHowItWorks;
-    }
-
+    if (href === "/") return pathname === "/" && !isHowItWorks;
+    if (href === "/#how-it-works") return isHowItWorks;
     return pathname === href || pathname.startsWith(`${href}/`);
   }
 
@@ -107,14 +99,21 @@ export default function Navbar() {
   function closeMobileMenu() {
     setMenuOpen(false);
   }
-
+  function handleNavClick(href: string) {
+    if (href.includes("#")) {
+      setHash(`#${href.split("#")[1]}`);
+    } else if (href === "/") {
+      setHash("");
+    }
+    setMenuOpen(false);
+  }
   return (
     <header className="sticky top-0 z-50 border-b border-border/60 bg-background/85 backdrop-blur-xl">
       <nav className="mx-auto flex h-20 max-w-7xl items-center justify-between px-6 lg:px-8">
         {/* Logo */}
         <Link
           href="/"
-          onClick={closeMobileMenu}
+          onClick={() => handleNavClick("/")}
           className="flex items-center gap-2.5"
         >
           <span className="flex size-10 items-center justify-center rounded-xl bg-primary text-primary-foreground">
@@ -135,6 +134,7 @@ export default function Navbar() {
               <Link
                 key={link.href}
                 href={link.href}
+                onClick={() => handleNavClick(link.href)}
                 aria-current={active ? "page" : undefined}
                 className={`relative py-2 text-sm font-medium transition-colors ${
                   active
@@ -262,7 +262,7 @@ export default function Navbar() {
                 <Link
                   key={link.href}
                   href={link.href}
-                  onClick={closeMobileMenu}
+                  onClick={() => handleNavClick(link.href)}
                   aria-current={active ? "page" : undefined}
                   className={`rounded-lg border-l-2 px-4 py-3 text-sm font-medium transition-colors ${
                     active

@@ -1,7 +1,7 @@
 "use client";
 
 import { Suspense, useEffect, useState } from "react";
-import { useSearchParams } from "next/navigation";
+import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { MapPin, Star } from "lucide-react";
@@ -33,25 +33,23 @@ const categories = [
 
 function ExploreStudiosContent() {
   const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
 
-  const [selectedCategory, setSelectedCategory] = useState(
-    searchParams.get("category") || "All",
-  );
+  const selectedCategory = searchParams.get("category") || "All";
+
+  const handleCategoryChange = (category: string) => {
+    const params = new URLSearchParams(searchParams.toString());
+    if (category === "All") params.delete("category");
+    else params.set("category", category);
+    const qs = params.toString();
+    router.push(qs ? `${pathname}?${qs}` : pathname);
+  };
 
   const [studios, setStudios] = useState<Studio[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [retryCount, setRetryCount] = useState(0);
-
-  // Keep the selected category in sync when the URL query changes
-  // (e.g. clicking a category link while already on /studios).
-  useEffect(() => {
-    const categoryParam = searchParams.get("category") || "All";
-
-    setSelectedCategory((previous) =>
-      previous === categoryParam ? previous : categoryParam,
-    );
-  }, [searchParams]);
 
   useEffect(() => {
     const fetchStudios = async () => {
@@ -109,7 +107,7 @@ function ExploreStudiosContent() {
             <Button
               key={category}
               variant={selectedCategory === category ? "default" : "outline"}
-              onClick={() => setSelectedCategory(category)}
+              onClick={() => handleCategoryChange(category)}
             >
               {category}
             </Button>
@@ -148,7 +146,10 @@ function ExploreStudiosContent() {
             <p className="mt-2 text-muted-foreground">
               Try selecting another category.
             </p>
-            <Button className="mt-5" onClick={() => setSelectedCategory("All")}>
+            <Button
+              className="mt-5"
+              onClick={() => handleCategoryChange("All")}
+            >
               View All Studios
             </Button>
           </div>
